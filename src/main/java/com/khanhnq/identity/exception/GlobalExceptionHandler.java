@@ -1,6 +1,7 @@
 package com.khanhnq.identity.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -11,6 +12,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<String> handlingRuntimeException(RuntimeException exception){
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
-
-
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<String> handlingValidation(MethodArgumentNotValidException methodArgumentNotValidException){
+        return ResponseEntity.badRequest().body(methodArgumentNotValidException.getFieldError().getDefaultMessage());
+    }
 }
