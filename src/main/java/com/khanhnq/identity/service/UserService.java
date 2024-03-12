@@ -3,6 +3,8 @@ package com.khanhnq.identity.service;
 import com.khanhnq.identity.dto.request.UserCreationRequest;
 import com.khanhnq.identity.dto.request.UserUpdateRequest;
 import com.khanhnq.identity.entity.UserTable;
+import com.khanhnq.identity.exception.AppException;
+import com.khanhnq.identity.exception.ErrorCode;
 import com.khanhnq.identity.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class UserService {
         UserTable userNew = new UserTable();
 
         if (userRepository.existsByUsername(request.getUsername())){
-            throw new RuntimeException("User existed.");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         userNew.setUsername(request.getUsername());
