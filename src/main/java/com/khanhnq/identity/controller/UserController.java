@@ -1,5 +1,6 @@
 package com.khanhnq.identity.controller;
 
+import com.khanhnq.identity.dto.request.APIResponse;
 import com.khanhnq.identity.dto.request.UserCreationRequest;
 import com.khanhnq.identity.dto.request.UserUpdateRequest;
 import com.khanhnq.identity.entity.UserTable;
@@ -17,8 +18,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping()
-    UserTable createUser(@RequestBody @Valid UserCreationRequest request) {
-        return userService.createUser(request);
+    APIResponse<UserTable> createUser(@RequestBody @Valid UserCreationRequest request) {
+        APIResponse<UserTable> apiResponse = new APIResponse<>();
+
+        apiResponse.setResult(userService.createUser(request));
+
+        return apiResponse;
     }
 
     @GetMapping()
