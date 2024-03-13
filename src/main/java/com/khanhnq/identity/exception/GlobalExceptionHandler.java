@@ -1,6 +1,7 @@
 package com.khanhnq.identity.exception;
 
 import com.khanhnq.identity.dto.request.APIResponse;
+import com.sun.source.tree.TryTree;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -32,7 +33,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<String> handlingValidation(MethodArgumentNotValidException methodArgumentNotValidException){
-        return ResponseEntity.badRequest().body(methodArgumentNotValidException.getFieldError().getDefaultMessage());
+    ResponseEntity<APIResponse> handlingValidation(MethodArgumentNotValidException methodArgumentNotValidException){
+        String enumKey = methodArgumentNotValidException.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        try {
+            errorCode = ErrorCode.valueOf(enumKey);
+        } catch (IllegalArgumentException e) {
+            errorCode = ErrorCode.INVALID_KEY;
+        }
+
+        APIResponse apiResponse = new APIResponse();
+
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
     }
 }
