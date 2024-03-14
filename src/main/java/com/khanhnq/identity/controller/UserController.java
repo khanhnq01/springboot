@@ -3,19 +3,22 @@ package com.khanhnq.identity.controller;
 import com.khanhnq.identity.dto.request.APIResponse;
 import com.khanhnq.identity.dto.request.UserCreationRequest;
 import com.khanhnq.identity.dto.request.UserUpdateRequest;
+import com.khanhnq.identity.dto.response.UserResponse;
 import com.khanhnq.identity.entity.UserTable;
 import com.khanhnq.identity.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class UserController {
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     @PostMapping()
     APIResponse<UserTable> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -32,12 +35,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    UserTable getUserById(@PathVariable("userId") String userId) {
+    UserResponse getUserById(@PathVariable("userId") String userId) {
         return userService.getUserById(userId);
     }
 
     @PutMapping("/{userId}")
-    UserTable updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return userService.updateUser(userId, request);
     }
 
