@@ -1,6 +1,7 @@
 package com.khanhnq.identity.service;
 
 import com.khanhnq.identity.dto.request.AuthenticationRequest;
+<<<<<<< HEAD
 import com.khanhnq.identity.dto.request.IntrospectRequest;
 import com.khanhnq.identity.dto.response.AuthenticationResponse;
 import com.khanhnq.identity.dto.response.IntrospectResponse;
@@ -19,27 +20,42 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+=======
+import com.khanhnq.identity.exception.AppException;
+import com.khanhnq.identity.exception.ErrorCode;
+import com.khanhnq.identity.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+>>>>>>> main
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+<<<<<<< HEAD
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
 
+=======
+>>>>>>> main
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
+<<<<<<< HEAD
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
+=======
+    public boolean authenticate(AuthenticationRequest request) {
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+>>>>>>> main
 
     public IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException {
@@ -60,6 +76,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+<<<<<<< HEAD
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -101,6 +118,9 @@ public class AuthenticationService {
             log.error("Cannot create token", e);
             throw new RuntimeException(e);
         }
+=======
+        return passwordEncoder.matches(request.getPassword(), user.getPassword());
+>>>>>>> main
     }
 
     private String buildScope(User user){

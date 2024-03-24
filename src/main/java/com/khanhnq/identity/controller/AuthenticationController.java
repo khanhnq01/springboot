@@ -23,12 +23,23 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+<<<<<<< HEAD
 
     @PostMapping("/token")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
+=======
+    @PostMapping("/login")
+    APIResponse<AuthenticationResponse> authenticationResponseAPIResponse(@RequestBody AuthenticationRequest request) {
+        boolean result = authenticationService.authenticate(request);
+
+        return APIResponse.<AuthenticationResponse>builder()
+                .result(AuthenticationResponse.builder()
+                        .authenticated(result)
+                        .build())
+>>>>>>> main
                 .build();
     }
 
