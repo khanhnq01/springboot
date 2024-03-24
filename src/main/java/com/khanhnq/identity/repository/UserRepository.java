@@ -1,10 +1,13 @@
 package com.khanhnq.identity.repository;
 
-import com.khanhnq.identity.entity.UserTable;
+import com.khanhnq.identity.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface UserRepository extends JpaRepository<UserTable, String> {
+public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByUsername(String username);
+    Optional<User> findByUsername(String username);
 }

@@ -1,11 +1,17 @@
 package com.khanhnq.identity.mapper;
 
 import com.khanhnq.identity.dto.request.UserCreationRequest;
-import com.khanhnq.identity.entity.UserTable;
+import com.khanhnq.identity.dto.request.UserUpdateRequest;
+import com.khanhnq.identity.dto.response.UserResponse;
+import com.khanhnq.identity.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserTable toUser(UserCreationRequest userCreationRequest);
+    User toUser(UserCreationRequest request);
 
+    UserResponse toUserResponse(User user);
+
+    void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }
