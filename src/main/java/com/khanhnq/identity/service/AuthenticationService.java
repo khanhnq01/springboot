@@ -1,7 +1,6 @@
 package com.khanhnq.identity.service;
 
 import com.khanhnq.identity.dto.request.AuthenticationRequest;
-<<<<<<< HEAD
 import com.khanhnq.identity.dto.request.IntrospectRequest;
 import com.khanhnq.identity.dto.response.AuthenticationResponse;
 import com.khanhnq.identity.dto.response.IntrospectResponse;
@@ -17,71 +16,35 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-=======
-import com.khanhnq.identity.exception.AppException;
-import com.khanhnq.identity.exception.ErrorCode;
-import com.khanhnq.identity.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
->>>>>>> main
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-<<<<<<< HEAD
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
 
-=======
->>>>>>> main
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
+
     UserRepository userRepository;
-<<<<<<< HEAD
 
-    @NonFinal
     @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
-=======
-    public boolean authenticate(AuthenticationRequest request) {
-        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
->>>>>>> main
+    String SIGNER_KEY;
 
-    public IntrospectResponse introspect(IntrospectRequest request)
-            throws JOSEException, ParseException {
-        var token = request.getToken();
-
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date()))
-                .build();
-    }
-
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-<<<<<<< HEAD
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(),
-                user.getPassword());
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
@@ -94,7 +57,32 @@ public class AuthenticationService {
                 .build();
     }
 
+    public IntrospectResponse introspect(IntrospectRequest request) {
+        try {
+            var token = request.getToken();
+
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+            var verified = signedJWT.verify(verifier);
+
+            return IntrospectResponse.builder()
+                    .valid(verified && expiryTime.after(new Date()))
+                    .build();
+        } catch (ParseException | JOSEException e) {
+            log.error("Failed to introspect token", e);
+            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private String generateToken(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -116,14 +104,11 @@ public class AuthenticationService {
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new RuntimeException(e);
+            throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-=======
-        return passwordEncoder.matches(request.getPassword(), user.getPassword());
->>>>>>> main
     }
 
-    private String buildScope(User user){
+    private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty(user.getRoles()))
             user.getRoles().forEach(stringJoiner::add);

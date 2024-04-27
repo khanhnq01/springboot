@@ -1,5 +1,6 @@
 package com.khanhnq.identity.dto.response;
 
+import com.khanhnq.identity.repository.UserRepository;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,4 +11,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationResponse {
     boolean authenticated;
+    UserRepository userRepository;
 }
