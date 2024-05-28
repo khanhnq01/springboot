@@ -37,7 +37,7 @@ public class AuthenticationService {
     UserRepository userRepository;
 
     @Value("${jwt.signerKey}")
-    String SIGNER_KEY;
+    private final ThreadLocal<String> SIGNER_KEY = new ThreadLocal<String>();
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -52,7 +52,6 @@ public class AuthenticationService {
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()
-                .token(token)
                 .authenticated(true)
                 .build();
     }
@@ -61,7 +60,7 @@ public class AuthenticationService {
         try {
             var token = request.getToken();
 
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.get().getBytes());
 
             SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -100,7 +99,7 @@ public class AuthenticationService {
         JWSObject jwsObject = new JWSObject(header, payload);
 
         try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            jwsObject.sign(new MACSigner(SIGNER_KEY.get().getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
