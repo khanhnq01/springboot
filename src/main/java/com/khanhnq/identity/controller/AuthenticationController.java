@@ -29,7 +29,7 @@ import java.util.Date;
 public class AuthenticationController {
 
     AuthenticationService authenticationService;
-    String SIGNER_KEY;
+    final ThreadLocal<String> SIGNER_KEY = new ThreadLocal<String>();
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AuthenticationController.class);
 
@@ -55,7 +55,7 @@ public class AuthenticationController {
         try {
             var token = request.getToken();
 
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.get().getBytes());
 
             SignedJWT signedJWT = SignedJWT.parse(token);
 

@@ -36,7 +36,7 @@ public class AuthenticationService {
 
     UserRepository userRepository;
 
-    @Value("${jwt.signerKey}")
+    @Value(value = "${jwt.signerKey}")
     private final ThreadLocal<String> SIGNER_KEY = new ThreadLocal<String>();
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -58,9 +58,11 @@ public class AuthenticationService {
 
     public IntrospectResponse introspect(IntrospectRequest request) {
         try {
-            var token = request.getToken();
+            String token;
+            token = request.getToken();
 
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.get().getBytes());
+            JWSVerifier verifier;
+            verifier = new MACVerifier(SIGNER_KEY.get().getBytes());
 
             SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -86,7 +88,7 @@ public class AuthenticationService {
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
-                .issuer("devteria.com")
+                .issuer("deviate.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
